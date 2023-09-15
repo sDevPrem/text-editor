@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.editor.EditorFragment">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/editor_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/editor_menu"
+        app:navigationIcon="@drawable/ic_arrow_back">
+
+        <EditText
+            android:id="@+id/et_title"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="Title"
+            android:textAppearance="?attr/textAppearanceTitleLarge" />
+    </androidx.appcompat.widget.Toolbar>
+
+    <EditText
+        android:id="@+id/et_editor"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:gravity="start"
+        android:background="@null"
+        android:hint="Write here"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editor_toolbar" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/boldMenu"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Bold"
+            android:layout_marginHorizontal="8dp"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/italicMenu"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Italics"
+            android:gravity="center"
+            android:layout_marginHorizontal="8dp" />
+
+        <Button
+            android:id="@+id/underlineMenu"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Underline"
+            android:gravity="center"
+            android:layout_marginHorizontal="8dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

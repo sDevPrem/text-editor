@@ -10,12 +10,11 @@ import com.sdevprem.basictexteditor.domain.usecase.GetNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.domain.usecase.SaveNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
-import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
+import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.Style
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import com.sdevprem.basictexteditor.ui.editor.util.copy
-import com.sdevprem.basictexteditor.ui.editor.util.isAlreadyFormatted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,14 +48,18 @@ class EditorViewModel @Inject constructor(
     }
 
     private val _ranges: MutableList<SpanStyleRange> = mutableListOf()
-    val ranges: List<SpanStyleRange> = _ranges
+    private val ranges: List<SpanStyleRange> = _ranges
 
     private fun removeFormatting(spannable: Spannable, style: Style, start: Int, end: Int) {
         when (style) {
             is BoldStyle -> spannable.removeFormatting<BoldStyle>(_ranges, start, end)
-            ItalicStyle -> spannable.removeFormatting<ItalicStyle>(_ranges, start, end)
-            UnderLineStyle -> spannable.removeFormatting<UnderLineStyle>(_ranges, start, end)
-            else -> {}
+            is ItalicStyle -> spannable.removeFormatting<ItalicStyle>(_ranges, start, end)
+            is UnderLineStyle -> spannable.removeFormatting<UnderLineStyle>(_ranges, start, end)
+            is RelativeFontSizeStyle -> spannable.removeFormatting<RelativeFontSizeStyle>(
+                _ranges,
+                start,
+                end
+            )
         }
     }
 
@@ -87,11 +90,11 @@ class EditorViewModel @Inject constructor(
         }
     }
 
-    fun toggleFormatting(style: SimpleStyle, spannable: Spannable, start: Int, end: Int) {
+    fun toggleFormatting(style: Style, spannable: Spannable, start: Int, end: Int) {
         if (start == end)
             return
 
-        if (spannable.isAlreadyFormatted(start, end, style)) {
+        if (style.isSpannableFormatted(start, end, spannable)) {
             removeFormatting(spannable, style, start, end)
         } else {
             removeFormatting(spannable, style, start, end)

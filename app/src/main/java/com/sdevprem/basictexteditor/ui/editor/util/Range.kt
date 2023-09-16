@@ -1,7 +1,7 @@
 package com.sdevprem.basictexteditor.ui.editor.util
 
 import android.graphics.Typeface
-import android.text.style.AbsoluteSizeSpan
+import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 
@@ -20,7 +20,7 @@ class SpanStyleRange(
         is BoldStyle -> StyleSpan(Typeface.BOLD)
         is ItalicStyle -> StyleSpan(Typeface.ITALIC)
         is UnderLineStyle -> UnderlineSpan()
-        is FontSizeStyle -> AbsoluteSizeSpan(style.data)
+        is RelativeFontSizeStyle -> RelativeSizeSpan(style.data)
 //        is FontTypeStyle -> Typeface.createFromAsset(
 //            style.assetManagerProvider(),
 //            style.data

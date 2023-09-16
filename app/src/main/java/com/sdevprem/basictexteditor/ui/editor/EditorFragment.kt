@@ -13,10 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.sdevprem.basictexteditor.R
+import com.sdevprem.basictexteditor.common.animateDown
+import com.sdevprem.basictexteditor.common.animateUp
 import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
 import com.sdevprem.basictexteditor.ui.editor.util.Range
+import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,6 +67,8 @@ class EditorFragment : Fragment() {
             }
         }
 
+        fragment = this@EditorFragment
+
         editorToolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
@@ -84,14 +89,17 @@ class EditorFragment : Fragment() {
             }
         }
 
-        boldMenu.setOnClickListener {
+        btnBold.setOnClickListener {
             toggleFormatting(BoldStyle)
         }
-        italicMenu.setOnClickListener {
+        btnItalic.setOnClickListener {
             toggleFormatting(ItalicStyle)
         }
-        underlineMenu.setOnClickListener {
+        btnUnderline.setOnClickListener {
             toggleFormatting(UnderLineStyle)
+        }
+        btnFontSize.setOnClickListener {
+            fontSizeContainer.animateUp()
         }
 
         etEditor.doOnTextChanged { _, start, before, count ->
@@ -102,6 +110,20 @@ class EditorFragment : Fragment() {
         return@with
 
     }
+
+    fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
+        closeFontSizeSelector()
+        viewModel.toggleFormatting(
+            RelativeFontSizeStyle(sizeMultiplier),
+            etEditor.text,
+            etEditor.selectionStart,
+            etEditor.selectionEnd,
+        )
+    }
+
+
+    fun closeFontSizeSelector() = binding.fontSizeContainer.animateDown()
+
 
     private fun toggleFormatting(style: SimpleStyle) = with(binding) {
         viewModel.toggleFormatting(

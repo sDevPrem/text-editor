@@ -6,8 +6,8 @@ import com.sdevprem.basictexteditor.data.model.FormatType
 import com.sdevprem.basictexteditor.data.model.Note
 import com.sdevprem.basictexteditor.domain.model.NoteWithStyle
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
-import com.sdevprem.basictexteditor.ui.editor.util.FontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
+import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 
@@ -16,7 +16,12 @@ fun SpanStyleRange.toFormat(): Format {
         is BoldStyle -> Format(start, end, FormatType.BOLD)
         is ItalicStyle -> Format(start, end, FormatType.ITALICS)
         is UnderLineStyle -> Format(start, end, FormatType.UNDERLINE)
-        is FontSizeStyle -> Format(start, end, FormatType.FONT_SIZE, listOf(style.data.toString()))
+        is RelativeFontSizeStyle -> Format(
+            start,
+            end,
+            FormatType.FONT_SIZE,
+            listOf(style.data.toString())
+        )
     }
 }
 
@@ -24,7 +29,7 @@ fun Format.toStyleSpanRange() = when (formatType) {
     FormatType.BOLD -> SpanStyleRange(start, end, BoldStyle)
     FormatType.ITALICS -> SpanStyleRange(start, end, ItalicStyle)
     FormatType.UNDERLINE -> SpanStyleRange(start, end, UnderLineStyle)
-    FormatType.FONT_SIZE -> SpanStyleRange(start, end, FontSizeStyle(data[0].toInt()))
+    FormatType.FONT_SIZE -> SpanStyleRange(start, end, RelativeFontSizeStyle(data[0].toFloat()))
 }
 
 fun Note.toNoteWithStyle() = NoteWithStyle(

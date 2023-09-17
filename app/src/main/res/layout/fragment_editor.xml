@@ -31,21 +31,35 @@
                 android:layout_height="match_parent"
                 android:background="@null"
                 android:hint="Title"
+                android:singleLine="true"
+                android:maxLines="1"
                 android:textAppearance="?attr/textAppearanceTitleLarge" />
         </androidx.appcompat.widget.Toolbar>
 
-        <EditText
-            android:id="@+id/et_editor"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_margin="16dp"
-            android:gravity="start"
-            android:background="@null"
-            android:hint="Write here"
+            android:scrollbars="vertical"
+            android:scrollbarThumbVertical="?attr/colorSurfaceVariant"
+            android:layout_marginEnd="4dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editor_toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/editor_toolbar">
+
+            <EditText
+                android:id="@+id/et_editor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="128dp"
+                app:lineHeight="28sp"
+                android:layout_marginVertical="16dp"
+                android:layout_marginHorizontal="24dp"
+                android:gravity="start"
+                android:background="@null"
+                android:hint="Write here" />
+
+        </androidx.core.widget.NestedScrollView>
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -97,6 +111,16 @@
                 android:gravity="center"
                 android:src="@drawable/ic_font_size"
                 android:text="Font Size" />
+
+            <ImageButton
+                android:id="@+id/btn_insertImg"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:src="@drawable/ic_img"
+                android:text="Insert Image" />
         </LinearLayout>
 
         <LinearLayout

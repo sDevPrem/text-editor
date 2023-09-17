@@ -9,8 +9,8 @@ import com.sdevprem.basictexteditor.data.mapper.FormatConverter
 data class Note(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
-    val title: String,
-    val body: String,
+    val title: String = "",
+    val body: String = "",
     @TypeConverters(FormatConverter::class)
-    val formatList: List<Format>
+    val formatList: List<Format> = emptyList()
 )

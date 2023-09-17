@@ -1,14 +1,18 @@
 package com.sdevprem.basictexteditor.ui.editor
 
+import android.net.Uri
 import android.text.Spannable
+import android.text.SpannableStringBuilder
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sdevprem.basictexteditor.common.provider.DrawableProvider
 import com.sdevprem.basictexteditor.data.repository.NotesRepository
 import com.sdevprem.basictexteditor.domain.model.NoteWithStyle
 import com.sdevprem.basictexteditor.domain.usecase.GetNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.domain.usecase.SaveNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
+import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
 import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
@@ -23,26 +27,30 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     getNoteWithStyle: GetNoteWithStyleUseCase,
     private val saveNoteWithStyleUseCase: SaveNoteWithStyleUseCase,
     private val repository: NotesRepository,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val drawableProvider: DrawableProvider
 ) : ViewModel() {
 
     private val _editorAction = MutableSharedFlow<EditorViewAction>()
     val editorAction = _editorAction.asSharedFlow()
     private val id: Long
+    private var shouldUpdate = true
 
     init {
         id = EditorFragmentArgs.fromSavedStateHandle(savedStateHandle).id
         if (id > 0)
             getNoteWithStyle(id)
                 .onEach {
-                    _editorAction.emit(EditorViewAction.ShowNote(it))
+                    _editorAction.emit(EditorViewAction.ShowNote(it ?: NoteWithStyle()))
                     _ranges.clear()
-                    _ranges.addAll(it.ranges)
+                    it?.let { _ranges.addAll(it.ranges) }
+
                 }
                 .launchIn(viewModelScope)
     }
@@ -60,13 +68,35 @@ class EditorViewModel @Inject constructor(
                 start,
                 end
             )
+
+            is ImageStyle -> spannable.removeFormatting<ImageStyle>(_ranges, start, end)
+        }
+    }
+
+    fun insertImage(uri: Uri, spannable: Spannable, start: Int, end: Int): Spannable {
+
+        return SpannableStringBuilder(spannable).apply {
+            val id = " "
+            replace(start, end, id)
+            val style = ImageStyle(uri.toString(), drawableProvider)
+            val range = SpanStyleRange(start, start + id.length, style)
+            setSpan(range.format, start, start + id.length, style.spannableFlag)
+            updateRanges(start, start + id.length, 0)
+            shouldUpdate = false
+            _ranges.add(range)
         }
     }
 
     fun updateRanges(start: Int, countAfter: Int, countBefore: Int) {
+        if (!shouldUpdate) {
+            shouldUpdate = true
+            return
+        }
         val delta = countAfter - countBefore
         for (range in ranges) {
-            if (start <= range.start && start + countBefore >= range.end) {
+            if (start > range.end || range.start == range.end) {
+                continue
+            } else if (start <= range.start && start + countBefore > range.end) {
                 //text :   -------------------
                 //range :       --------
                 //changing:  --------------
@@ -78,14 +108,18 @@ class EditorViewModel @Inject constructor(
                 //changing:  ---
                 range.start += delta
                 range.end += delta
-            } else if (start < range.start && start + countBefore > start) {
+            } else if (start < range.start && start + countBefore > range.start) {
                 //text :   -------------------
                 //range :         --------
                 //changing:   ------
                 range.start = start
                 range.end += delta
             } else {
-                range.end += delta
+                if (
+                    range.style.spannableFlag != Spannable.SPAN_EXCLUSIVE_EXCLUSIVE &&
+                    range.style.spannableFlag != Spannable.SPAN_INCLUSIVE_EXCLUSIVE
+                )
+                    range.end += delta
             }
         }
     }
@@ -99,7 +133,7 @@ class EditorViewModel @Inject constructor(
         } else {
             removeFormatting(spannable, style, start, end)
             val range = SpanStyleRange(start, end, style)
-            spannable.setSpan(range.format, start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            spannable.setSpan(range.format, start, end, style.spannableFlag)
             _ranges.add(range)
         }
 
@@ -137,13 +171,13 @@ class EditorViewModel @Inject constructor(
                 removeSpan(range.format)
                 val secondEnd = range.end
                 range.end = start
-                setSpan(range.format, range.start, range.end, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                setSpan(range.format, range.start, range.end, range.style.spannableFlag)
                 val secondRange = range.copy(end, secondEnd)
                 setSpan(
                     secondRange.format,
                     secondRange.start,
                     secondRange.end,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                    range.style.spannableFlag
                 )
                 newRanges.add(secondRange)
             } else if (range.start < start) {
@@ -155,7 +189,7 @@ class EditorViewModel @Inject constructor(
                     range.format,
                     range.start,
                     start,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                    range.style.spannableFlag
                 )
                 range.end = start
             } else {
@@ -167,7 +201,7 @@ class EditorViewModel @Inject constructor(
                     range.format,
                     end,
                     range.end,
-                    Spannable.SPAN_INCLUSIVE_INCLUSIVE
+                    range.style.spannableFlag
                 )
                 range.start = end
             }
@@ -194,7 +228,8 @@ class EditorViewModel @Inject constructor(
 
     fun deleteNote() {
         viewModelScope.launch {
-            repository.deleteNote(id)
+            if (id > 0)
+                repository.deleteNote(id)
             _editorAction.emit(EditorViewAction.NavigateBack)
         }
     }

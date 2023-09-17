@@ -1,6 +1,7 @@
 package com.sdevprem.basictexteditor.ui.editor.util
 
 import android.graphics.Typeface
+import android.text.style.ImageSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
@@ -25,6 +26,7 @@ class SpanStyleRange(
 //            style.assetManagerProvider(),
 //            style.data
 //        )
+        is ImageStyle -> ImageSpan(style.getDrawable())
     }
 ) : Range(
     start,

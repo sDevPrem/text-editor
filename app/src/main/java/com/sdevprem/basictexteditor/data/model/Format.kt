@@ -8,6 +8,6 @@ data class Format(
 )
 
 enum class FormatType {
-    BOLD, ITALICS, UNDERLINE, FONT_SIZE
+    BOLD, ITALICS, UNDERLINE, FONT_SIZE, IMAGE
 }
 

@@ -1,10 +1,13 @@
 package com.sdevprem.basictexteditor.ui.editor
 
+import android.content.Intent
 import android.os.Bundle
-import android.text.Spannable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,9 +21,9 @@ import com.sdevprem.basictexteditor.common.animateUp
 import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
-import com.sdevprem.basictexteditor.ui.editor.util.Range
 import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
+import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -32,6 +35,23 @@ class EditorFragment : Fragment() {
         get() = _binding!!
 
     private val viewModel by viewModels<EditorViewModel>()
+
+
+    private val imgPickerLauncher =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+            it?.let {
+                requireContext().contentResolver.takePersistableUriPermission(
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                with(binding.etEditor) {
+                    val newS = viewModel.insertImage(it, text, selectionStart, selectionEnd)
+                    val cursorPos = selectionEnd + (newS.length - text.length)
+                    setText(newS, TextView.BufferType.SPANNABLE)
+                    setSelection(cursorPos)
+                }
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,6 +122,14 @@ class EditorFragment : Fragment() {
             fontSizeContainer.animateUp()
         }
 
+        btnInsertImg.setOnClickListener {
+            imgPickerLauncher.launch(
+                PickVisualMediaRequest(
+                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                )
+            )
+        }
+
         etEditor.doOnTextChanged { _, start, before, count ->
             viewModel.updateRanges(start, count, before)
         }
@@ -134,10 +162,10 @@ class EditorFragment : Fragment() {
         )
     }
 
-    private fun applyRange(range: List<Range>) = with(binding.etEditor.text) {
+    private fun applyRange(range: List<SpanStyleRange>) = with(binding.etEditor.text) {
         range.forEach {
             if (it.start < it.end)
-                setSpan(it.format, it.start, it.end, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+                setSpan(it.format, it.start, it.end, it.style.spannableFlag)
         }
     }
 

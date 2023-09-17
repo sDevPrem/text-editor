@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.sdevprem.basictexteditor.R
 import com.sdevprem.basictexteditor.common.animateDown
 import com.sdevprem.basictexteditor.common.animateUp
@@ -35,6 +36,7 @@ class EditorFragment : Fragment() {
         get() = _binding!!
 
     private val viewModel by viewModels<EditorViewModel>()
+    private val args by navArgs<EditorFragmentArgs>()
 
 
     private val imgPickerLauncher =
@@ -133,6 +135,9 @@ class EditorFragment : Fragment() {
         etEditor.doOnTextChanged { _, start, before, count ->
             viewModel.updateRanges(start, count, before)
         }
+
+        if (args.id < 0)
+            editorToolbar.menu.findItem(R.id.menu_delete).isVisible = false
 
 
         return@with

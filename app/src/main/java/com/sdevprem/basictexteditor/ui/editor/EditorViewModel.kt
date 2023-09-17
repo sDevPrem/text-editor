@@ -86,41 +86,54 @@ class EditorViewModel @Inject constructor(
             _ranges.add(range)
         }
     }
-
     fun updateRanges(start: Int, countAfter: Int, countBefore: Int) {
         if (!shouldUpdate) {
             shouldUpdate = true
             return
         }
         val delta = countAfter - countBefore
-        for (range in ranges) {
-            if (start > range.end || range.start == range.end) {
-                continue
-            } else if (start <= range.start && start + countBefore > range.end) {
-                //text :   -------------------
-                //range :       --------
-                //changing:  --------------
-                range.start = start
-                range.end = start
-            } else if (start < range.start && start + countBefore < range.start) {
-                //text :   -------------------
-                //range :         --------
-                //changing:  ---
+        val selectionEnd = start + countBefore
+        _ranges.removeIf { range ->
+            if (range.start >= selectionEnd) {
+                //range :            ------------
+                //selection:   -----
+                //reminder :              ------------
                 range.start += delta
                 range.end += delta
-            } else if (start < range.start && start + countBefore > range.start) {
-                //text :   -------------------
-                //range :         --------
-                //changing:   ------
-                range.start = start
-                range.end += delta
-            } else {
+            } else if (start > range.end) {
+                return@removeIf false
+            } else if (start >= range.start && selectionEnd <= range.end) {
+                //range :         ------------
+                //selection:        --------
+
+                //do not expand non expandable
                 if (
-                    range.style.spannableFlag != Spannable.SPAN_EXCLUSIVE_EXCLUSIVE &&
-                    range.style.spannableFlag != Spannable.SPAN_INCLUSIVE_EXCLUSIVE
-                )
+                    !(start == range.end &&
+                            (range.style.spannableFlag == Spannable.SPAN_EXCLUSIVE_EXCLUSIVE))
+                ) {
                     range.end += delta
+                    if (range.start == range.end)
+                        return@removeIf true
+                }
+
+            } else if (start < range.start && selectionEnd > range.end) {
+                //range :        ------------
+                //selection:   ----------------
+                //reminder :
+                return@removeIf true
+            } else if (start < range.start && selectionEnd < range.end) {
+                //range :        ------------
+                //selection:  ---------
+                //reminder :            _____
+                range.start += delta + (selectionEnd - range.start)
+                range.end += delta
+            } else if (start < range.end && selectionEnd > range.end) {
+                //range :       ------------
+                //selection:         ---------
+                //reminder :    _____
+                range.end += delta + (selectionEnd - range.end)
             }
+            return@removeIf false
         }
     }
 
@@ -145,24 +158,21 @@ class EditorViewModel @Inject constructor(
         end: Int,
     ) {
         val newRanges: MutableList<SpanStyleRange> = ArrayList()
-        val removeIndex = mutableListOf<Int>()
-
-        for (i in formattingRanges.indices) {
-            val range = formattingRanges[i]
+        formattingRanges.removeIf { range ->
             if (range.style !is T)
-                continue
+                return@removeIf false
 
             if (range.start >= end || range.end <= start) {
                 //range: --         --
                 //selection:   ---
                 // Range is outside the selected text, no change needed
-                continue
+                return@removeIf false
             } else if (range.start >= start && range.end <= end) {
                 //range:       ------
                 //selection: -----------
                 //Range is completely inside the selected text, remove it
                 removeSpan(range.format)
-                removeIndex.add(i)
+                return@removeIf true
             } else if (range.start < start && range.end > end) {
                 //range:       ------------
                 //selection:     -------
@@ -205,10 +215,7 @@ class EditorViewModel @Inject constructor(
                 )
                 range.start = end
             }
-        }
-        removeIndex.forEach {
-            if (it in formattingRanges.indices)
-                formattingRanges.removeAt(it)
+            return@removeIf false
         }
         formattingRanges.addAll(newRanges)
     }

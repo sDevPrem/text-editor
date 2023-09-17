@@ -22,7 +22,7 @@ sealed class ParameterStyle<T>(
 sealed class SimpleStyle : Style()
 
 object BoldStyle : SimpleStyle() {
-    override val spannableFlag = Spannable.SPAN_INCLUSIVE_INCLUSIVE
+    override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
 
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         for (i in start until end) {
@@ -35,7 +35,7 @@ object BoldStyle : SimpleStyle() {
 }
 
 object ItalicStyle : SimpleStyle() {
-    override val spannableFlag = Spannable.SPAN_INCLUSIVE_INCLUSIVE
+    override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         for (i in start until end) {
             val matched =
@@ -48,7 +48,7 @@ object ItalicStyle : SimpleStyle() {
 }
 
 object UnderLineStyle : SimpleStyle() {
-    override val spannableFlag = Spannable.SPAN_INCLUSIVE_INCLUSIVE
+    override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         for (i in start until end) {
             if (spannable.getSpans<UnderlineSpan>(i, i + 1).isEmpty())
@@ -68,7 +68,7 @@ class RelativeFontSizeStyle(
     sizeMultiplier: Float
 ) : ParameterStyle<Float>(sizeMultiplier) {
 
-    override val spannableFlag = Spannable.SPAN_INCLUSIVE_INCLUSIVE
+    override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
     private val defaultValue = 1f
     private val multiplier = sizeMultiplier
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {

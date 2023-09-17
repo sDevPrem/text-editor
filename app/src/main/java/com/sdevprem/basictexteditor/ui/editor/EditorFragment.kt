@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.sdevprem.basictexteditor.R
+import com.sdevprem.basictexteditor.common.NoteUtils
 import com.sdevprem.basictexteditor.common.animateDown
 import com.sdevprem.basictexteditor.common.animateUp
 import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
@@ -123,6 +124,16 @@ class EditorFragment : Fragment() {
         btnFontSize.setOnClickListener {
             fontSizeContainer.animateUp()
         }
+        btnChangeFont.setOnClickListener {
+            fontTypeContainer.animateUp()
+        }
+        btnRemoveFont.setOnClickListener {
+            viewModel.removeFont(
+                etEditor.text,
+                etEditor.selectionStart,
+                etEditor.selectionEnd
+            )
+        }
 
         btnInsertImg.setOnClickListener {
             imgPickerLauncher.launch(
@@ -144,8 +155,30 @@ class EditorFragment : Fragment() {
 
     }
 
+    fun applyFont(viewId: Int) = with(binding.etEditor) {
+        when (viewId) {
+            R.id.btn_nunito -> {
+                viewModel.applyFont(
+                    selectionStart,
+                    selectionEnd,
+                    text,
+                    NoteUtils.FONT_NUNITO
+                )
+            }
+
+            R.id.btn_robotSlab -> {
+                viewModel.applyFont(
+                    selectionStart,
+                    selectionEnd,
+                    text,
+                    NoteUtils.FONT_ROBOTO_SLAB
+                )
+            }
+        }
+    }
+
     fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
-        closeFontSizeSelector()
+        closeSelector(fontSizeContainer.id)
         viewModel.toggleFormatting(
             RelativeFontSizeStyle(sizeMultiplier),
             etEditor.text,
@@ -155,7 +188,15 @@ class EditorFragment : Fragment() {
     }
 
 
-    fun closeFontSizeSelector() = binding.fontSizeContainer.animateDown()
+    fun closeSelector(
+        viewId: Int
+    ) = when (viewId) {
+        R.id.font_size_container -> binding.fontSizeContainer.animateDown()
+        R.id.font_type_container -> binding.fontTypeContainer.animateDown()
+        else -> {
+
+        }
+    }
 
 
     private fun toggleFormatting(style: SimpleStyle) = with(binding) {

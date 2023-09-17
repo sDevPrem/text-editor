@@ -22,11 +22,11 @@ class SpanStyleRange(
         is ItalicStyle -> StyleSpan(Typeface.ITALIC)
         is UnderLineStyle -> UnderlineSpan()
         is RelativeFontSizeStyle -> RelativeSizeSpan(style.data)
-//        is FontTypeStyle -> Typeface.createFromAsset(
-//            style.assetManagerProvider(),
-//            style.data
-//        )
         is ImageStyle -> ImageSpan(style.getDrawable())
+        is FontTypeStyle -> FontsTypeFace(
+            style.data,
+            style.fontProvider
+        )
     }
 ) : Range(
     start,

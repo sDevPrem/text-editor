@@ -37,12 +37,13 @@
         </androidx.appcompat.widget.Toolbar>
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scrollbars="vertical"
-            android:scrollbarThumbVertical="?attr/colorSurfaceVariant"
             android:layout_marginEnd="4dp"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            android:scrollbarThumbVertical="?attr/colorSurfaceVariant"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/scrollview_formatting"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editor_toolbar">
@@ -51,77 +52,95 @@
                 android:id="@+id/et_editor"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingBottom="128dp"
-                app:lineHeight="28sp"
-                android:layout_marginVertical="16dp"
                 android:layout_marginHorizontal="24dp"
-                android:gravity="start"
+                android:layout_marginVertical="16dp"
                 android:background="@null"
-                android:hint="Write here" />
+                android:gravity="start"
+                android:hint="Write here"
+                android:paddingBottom="128dp"
+                app:lineHeight="28sp" />
 
         </androidx.core.widget.NestedScrollView>
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+        <HorizontalScrollView
+            android:id="@+id/scrollview_formatting"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="?attr/colorSurfaceVariant"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="?attr/colorSurfaceVariant"
+            android:scrollbarThumbHorizontal="@null">
 
-            <ImageButton
-                android:id="@+id/btn_bold"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_bold"
-                android:text="Bold" />
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="52dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/btn_underline"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_underline"
-                android:text="Underline" />
+                <ImageButton
+                    android:id="@+id/btn_bold"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_bold"
+                    android:text="Bold" />
 
-            <ImageButton
-                android:id="@+id/btn_italic"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_italic"
-                android:text="Italics" />
+                <ImageButton
+                    android:id="@+id/btn_underline"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_underline"
+                    android:text="Underline" />
 
-            <ImageButton
-                android:id="@+id/btn_fontSize"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_font_size"
-                android:text="Font Size" />
+                <ImageButton
+                    android:id="@+id/btn_italic"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_italic"
+                    android:text="Italics" />
 
-            <ImageButton
-                android:id="@+id/btn_insertImg"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_img"
-                android:text="Insert Image" />
-        </LinearLayout>
+                <ImageButton
+                    android:id="@+id/btn_fontSize"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_font_size"
+                    android:text="Font Size" />
+
+                <ImageButton
+                    android:id="@+id/btn_insertImg"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_img"
+                    android:text="Insert Image" />
+
+                <ImageButton
+                    android:id="@+id/btn_changeFont"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:src="@drawable/ic_font_family"
+                    android:text="Change font" />
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <LinearLayout
             android:id="@+id/font_size_container"
@@ -200,7 +219,62 @@
                 android:layout_height="48dp"
                 android:layout_gravity="end|bottom"
                 android:background="?attr/selectableItemBackground"
-                android:onClick="@{() -> fragment.closeFontSizeSelector()}"
+                android:onClick="@{() -> fragment.closeSelector(fontSizeContainer.getId())}"
+                android:src="@drawable/ic_close" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/font_type_container"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:background="?attr/colorSurfaceVariant"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/font_size_container">
+
+            <TextView
+                android:id="@+id/btn_nunito"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:onClick="@{() -> fragment.applyFont(btnNunito.getId())}"
+                android:text="Nunito"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btn_robotSlab"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:onClick="@{() -> fragment.applyFont(btnRobotSlab.getId())}"
+                android:text="Roboto Slab"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btn_removeFont"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:src="@drawable/ic_no_font"
+                android:text="Remove font" />
+
+            <ImageButton
+                android:id="@+id/close_font_type"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="end|bottom"
+                android:background="?attr/selectableItemBackground"
+                android:onClick="@{() -> fragment.closeSelector(fontTypeContainer.getId())}"
                 android:src="@drawable/ic_close" />
         </LinearLayout>
 

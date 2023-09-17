@@ -9,6 +9,7 @@ import android.text.style.UnderlineSpan
 import androidx.core.net.toUri
 import androidx.core.text.getSpans
 import com.sdevprem.basictexteditor.common.provider.DrawableProvider
+import com.sdevprem.basictexteditor.common.provider.FontProvider
 
 sealed class Style {
     abstract val spannableFlag: Int
@@ -59,10 +60,23 @@ object UnderLineStyle : SimpleStyle() {
 
 }
 
-//class FontTypeStyle(
-//    fontType: String,
-//    val assetManagerProvider : () -> AssetManager,
-//): ParameterStyle<String>(fontType)
+class FontTypeStyle(
+    fontName: String,
+    val fontProvider: FontProvider
+) : ParameterStyle<String>(fontName) {
+    private val fontName = data
+
+    override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+    override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
+        for (i in start until end) {
+            val matched =
+                spannable.getSpans<FontsTypeFace>(i, i + 1).any { it.fontName == fontName }
+            if (!matched)
+                return false
+        }
+        return true
+    }
+}
 
 class RelativeFontSizeStyle(
     sizeMultiplier: Float

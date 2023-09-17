@@ -7,17 +7,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sdevprem.basictexteditor.common.provider.DrawableProvider
+import com.sdevprem.basictexteditor.common.provider.FontProvider
 import com.sdevprem.basictexteditor.data.repository.NotesRepository
 import com.sdevprem.basictexteditor.domain.model.NoteWithStyle
 import com.sdevprem.basictexteditor.domain.usecase.GetNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.domain.usecase.SaveNoteWithStyleUseCase
-import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
+import com.sdevprem.basictexteditor.ui.editor.util.FontTypeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle
-import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
-import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.Style
-import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import com.sdevprem.basictexteditor.ui.editor.util.copy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,7 +32,8 @@ class EditorViewModel @Inject constructor(
     private val saveNoteWithStyleUseCase: SaveNoteWithStyleUseCase,
     private val repository: NotesRepository,
     savedStateHandle: SavedStateHandle,
-    private val drawableProvider: DrawableProvider
+    private val drawableProvider: DrawableProvider,
+    private val fontProvider: FontProvider,
 ) : ViewModel() {
 
     private val _editorAction = MutableSharedFlow<EditorViewAction>()
@@ -59,18 +58,11 @@ class EditorViewModel @Inject constructor(
     private val ranges: List<SpanStyleRange> = _ranges
 
     private fun removeFormatting(spannable: Spannable, style: Style, start: Int, end: Int) {
-        when (style) {
-            is BoldStyle -> spannable.removeFormatting<BoldStyle>(_ranges, start, end)
-            is ItalicStyle -> spannable.removeFormatting<ItalicStyle>(_ranges, start, end)
-            is UnderLineStyle -> spannable.removeFormatting<UnderLineStyle>(_ranges, start, end)
-            is RelativeFontSizeStyle -> spannable.removeFormatting<RelativeFontSizeStyle>(
-                _ranges,
-                start,
-                end
-            )
+        spannable.removeFormatting(_ranges, start, end, style::class.java)
+    }
 
-            is ImageStyle -> spannable.removeFormatting<ImageStyle>(_ranges, start, end)
-        }
+    fun removeFont(spannable: Spannable, start: Int, end: Int) {
+        spannable.removeFormatting(_ranges, start, end, FontTypeStyle::class.java)
     }
 
     fun insertImage(uri: Uri, spannable: Spannable, start: Int, end: Int): Spannable {
@@ -152,14 +144,24 @@ class EditorViewModel @Inject constructor(
 
     }
 
-    private inline fun <reified T : Style> Spannable.removeFormatting(
+    fun applyFont(start: Int, end: Int, spannable: Spannable, fontName: String) {
+        toggleFormatting(
+            FontTypeStyle(fontName, fontProvider),
+            spannable,
+            start,
+            end
+        )
+    }
+
+    private fun <T : Style> Spannable.removeFormatting(
         formattingRanges: MutableList<SpanStyleRange>,
         start: Int,
         end: Int,
+        clazz: Class<T>
     ) {
         val newRanges: MutableList<SpanStyleRange> = ArrayList()
         formattingRanges.removeIf { range ->
-            if (range.style !is T)
+            if (!clazz.isInstance(range.style))
                 return@removeIf false
 
             if (range.start >= end || range.end <= start) {

@@ -51,5 +51,12 @@ object NoteUtils {
             this.toFloat(),
             Resources.getSystem().displayMetrics
         )
+
+    const val FONT_NUNITO = "Nunito-Regular.ttf"
+    const val FONT_ROBOTO_SLAB = "RobotoSlab-Regular.ttf"
+    val fonts = listOf(
+        FONT_NUNITO,
+        FONT_ROBOTO_SLAB
+    )
 }
 

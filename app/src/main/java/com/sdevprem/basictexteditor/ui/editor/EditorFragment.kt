@@ -175,6 +175,7 @@ class EditorFragment : Fragment() {
     }
 
     fun applyFont(viewId: Int) = with(binding.etEditor) {
+        //called from the layout using data binding
         when (viewId) {
             R.id.btn_nunito -> {
                 viewModel.applyFont(
@@ -200,6 +201,7 @@ class EditorFragment : Fragment() {
      * Increase the font according to given [sizeMultiplier]
      */
     fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
+        //called from the layout using data binding
         closeSelector(inFontSize.root.id)
         viewModel.toggleFormatting(
             RelativeFontSizeStyle(sizeMultiplier),
@@ -211,6 +213,7 @@ class EditorFragment : Fragment() {
 
 
     fun closeSelector(viewId: Int) = when (viewId) {
+        //called from the layout using data binding
         binding.inFontSize.root.id -> binding.inFontSize.root.animateDown()
         binding.inFontName.root.id -> binding.inFontName.root.animateDown()
         else -> {}

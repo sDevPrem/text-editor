@@ -22,12 +22,12 @@ object NoteUtils {
 
     /**
      * Fetch the image form the [uri] and create and return a [Drawable]
-     * whose width is equal to the device width (minus [paddingPx])
+     * whose width is equal to the device width (minus [marginPx])
      */
     fun loadDrawableWithWidthConstraint(
         uri: Uri,
         context: Context,
-        paddingPx: Float = 72.dpToPx
+        marginPx: Float = 72.dpToPx
     ): Drawable {
         val originalDrawable = context.contentResolver.openInputStream(uri)?.use {
             Drawable.createFromStream(it, uri.toString())
@@ -35,7 +35,7 @@ object NoteUtils {
 
         // Calculate the device width
         val displayMetrics = context.resources.displayMetrics
-        val deviceWidth = displayMetrics.widthPixels - 72.dpToPx
+        val deviceWidth = displayMetrics.widthPixels - marginPx
 
         // Calculate the new bounds based on device width
         val originalWidth = originalDrawable.intrinsicWidth

@@ -20,6 +20,7 @@ import com.sdevprem.basictexteditor.R
 import com.sdevprem.basictexteditor.common.NoteUtils
 import com.sdevprem.basictexteditor.common.animateDown
 import com.sdevprem.basictexteditor.common.animateUp
+import com.sdevprem.basictexteditor.common.provider.FontProvider
 import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
@@ -29,6 +30,7 @@ import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditorFragment : Fragment() {
@@ -39,6 +41,8 @@ class EditorFragment : Fragment() {
     private val viewModel by viewModels<EditorViewModel>()
     private val args by navArgs<EditorFragmentArgs>()
 
+    @Inject
+    lateinit var fontProvider: FontProvider
 
     private val imgPickerLauncher =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) {
@@ -67,6 +71,7 @@ class EditorFragment : Fragment() {
             false
         ).also {
             _binding = it
+            it.fragment = this
         }.root
     }
 
@@ -90,8 +95,13 @@ class EditorFragment : Fragment() {
             }
         }
 
-        fragment = this@EditorFragment
+        initLayout()
 
+        return@with
+
+    }
+
+    private fun initLayout() = with(binding) {
         editorToolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
         }
@@ -122,12 +132,12 @@ class EditorFragment : Fragment() {
             toggleFormatting(UnderLineStyle)
         }
         btnFontSize.setOnClickListener {
-            fontSizeContainer.animateUp()
+            inFontSize.root.animateUp()
         }
         btnChangeFont.setOnClickListener {
-            fontTypeContainer.animateUp()
+            inFontName.root.animateUp()
         }
-        btnRemoveFont.setOnClickListener {
+        inFontName.btnRemoveFont.setOnClickListener {
             viewModel.removeFont(
                 etEditor.text,
                 etEditor.selectionStart,
@@ -150,9 +160,8 @@ class EditorFragment : Fragment() {
         if (args.id < 0)
             editorToolbar.menu.findItem(R.id.menu_delete).isVisible = false
 
-
-        return@with
-
+        inFontName.btnNunito.typeface = fontProvider.getFont(NoteUtils.FONT_NUNITO)
+        inFontName.btnRobotSlab.typeface = fontProvider.getFont(NoteUtils.FONT_ROBOTO_SLAB)
     }
 
     fun applyFont(viewId: Int) = with(binding.etEditor) {
@@ -178,7 +187,7 @@ class EditorFragment : Fragment() {
     }
 
     fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
-        closeSelector(fontSizeContainer.id)
+        closeSelector(inFontSize.root.id)
         viewModel.toggleFormatting(
             RelativeFontSizeStyle(sizeMultiplier),
             etEditor.text,
@@ -191,11 +200,9 @@ class EditorFragment : Fragment() {
     fun closeSelector(
         viewId: Int
     ) = when (viewId) {
-        R.id.font_size_container -> binding.fontSizeContainer.animateDown()
-        R.id.font_type_container -> binding.fontTypeContainer.animateDown()
-        else -> {
-
-        }
+        binding.inFontSize.root.id -> binding.inFontSize.root.animateDown()
+        binding.inFontName.root.id -> binding.inFontName.root.animateDown()
+        else -> {}
     }
 
 

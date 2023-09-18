@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -82,201 +83,62 @@
 
                 <ImageButton
                     android:id="@+id/btn_bold"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_bold"
-                    android:text="Bold" />
+                    android:contentDescription="Bold" />
 
                 <ImageButton
                     android:id="@+id/btn_underline"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_underline"
-                    android:text="Underline" />
+                    android:contentDescription="Underline" />
 
                 <ImageButton
                     android:id="@+id/btn_italic"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_italic"
-                    android:text="Italics" />
+                    android:contentDescription="Italics" />
 
                 <ImageButton
                     android:id="@+id/btn_fontSize"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_font_size"
-                    android:text="Font Size" />
+                    android:contentDescription="Font Size" />
 
                 <ImageButton
                     android:id="@+id/btn_insertImg"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_img"
-                    android:text="Insert Image" />
+                    android:contentDescription="Insert Image" />
 
                 <ImageButton
                     android:id="@+id/btn_changeFont"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginHorizontal="8dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:gravity="center"
+                    style="@style/editor_bottom_toolbar_item"
                     android:src="@drawable/ic_font_family"
-                    android:text="Change font" />
+                    android:contentDescription="Change font" />
             </LinearLayout>
         </HorizontalScrollView>
 
-        <LinearLayout
-            android:id="@+id/font_size_container"
+        <include
+            android:id="@+id/in_font_size"
+            layout="@layout/layout_font_size_container"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="wrap_content"
             android:background="?attr/colorSurfaceVariant"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            bind:fragment="@{fragment}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="parent" />
 
-            <TextView
-                android:id="@+id/btn_1xFontSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.increaseFontSize(1f)}"
-                android:text="1x"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_2xFontSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.increaseFontSize(1.25f)}"
-                android:text="1.25x"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_3xFontSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.increaseFontSize(1.5f)}"
-                android:text="1.5x"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_4xFontSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.increaseFontSize(1.75f)}"
-                android:text="1.75x"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_5xFontSize"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.increaseFontSize(2f)}"
-                android:text="2x"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/close_font_size"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="end|bottom"
-                android:background="?attr/selectableItemBackground"
-                android:onClick="@{() -> fragment.closeSelector(fontSizeContainer.getId())}"
-                android:src="@drawable/ic_close" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/font_type_container"
+        <include
+            android:id="@+id/in_font_name"
+            layout="@layout/layout_font_name_container"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="?attr/colorSurfaceVariant"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
+            android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/font_size_container">
-
-            <TextView
-                android:id="@+id/btn_nunito"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.applyFont(btnNunito.getId())}"
-                android:text="Nunito"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btn_robotSlab"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:onClick="@{() -> fragment.applyFont(btnRobotSlab.getId())}"
-                android:text="Roboto Slab"
-                android:textAppearance="?attr/textAppearanceTitleMedium"
-                android:textStyle="bold" />
-
-            <ImageButton
-                android:id="@+id/btn_removeFont"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="center"
-                android:src="@drawable/ic_no_font"
-                android:text="Remove font" />
-
-            <ImageButton
-                android:id="@+id/close_font_type"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="end|bottom"
-                android:background="?attr/selectableItemBackground"
-                android:onClick="@{() -> fragment.closeSelector(fontTypeContainer.getId())}"
-                android:src="@drawable/ic_close" />
-        </LinearLayout>
+            app:layout_constraintTop_toBottomOf="parent"
+            bind:fragment="@{fragment}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

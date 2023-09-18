@@ -58,11 +58,15 @@ class EditorViewModel @Inject constructor(
     private val ranges: List<SpanStyleRange> = _ranges
 
     private fun removeFormatting(spannable: Spannable, style: Style, start: Int, end: Int) {
-        spannable.removeFormatting(_ranges, start, end, style::class.java)
+        spannable.removeFormatting(_ranges, start, end) {
+            !style::class.java.isInstance(it)
+        }
     }
 
     fun removeFont(spannable: Spannable, start: Int, end: Int) {
-        spannable.removeFormatting(_ranges, start, end, FontTypeStyle::class.java)
+        spannable.removeFormatting(_ranges, start, end) {
+            !FontTypeStyle::class.java.isInstance(it)
+        }
     }
 
     fun insertImage(uri: Uri, spannable: Spannable, start: Int, end: Int): Spannable {
@@ -72,8 +76,9 @@ class EditorViewModel @Inject constructor(
             replace(start, end, id)
             val style = ImageStyle(uri.toString(), drawableProvider)
             val range = SpanStyleRange(start, start + id.length, style)
-            setSpan(range.format, start, start + id.length, style.spannableFlag)
-            updateRanges(start, start + id.length, 0)
+            updateRanges(range.start, id.length, 0)
+            removeFormatting(_ranges, start, start + id.length) { false /*remove all style*/ }
+            setSpan(range.format, range.start, range.end, style.spannableFlag)
             shouldUpdate = false
             _ranges.add(range)
         }
@@ -153,15 +158,15 @@ class EditorViewModel @Inject constructor(
         )
     }
 
-    private fun <T : Style> Spannable.removeFormatting(
+    private fun Spannable.removeFormatting(
         formattingRanges: MutableList<SpanStyleRange>,
         start: Int,
         end: Int,
-        clazz: Class<T>
+        skip: (Style) -> Boolean
     ) {
         val newRanges: MutableList<SpanStyleRange> = ArrayList()
         formattingRanges.removeIf { range ->
-            if (!clazz.isInstance(range.style))
+            if (skip(range.style))
                 return@removeIf false
 
             if (range.start >= end || range.end <= start) {

@@ -72,13 +72,19 @@ class EditorViewModel @Inject constructor(
     fun insertImage(uri: Uri, spannable: Spannable, start: Int, end: Int): Spannable {
 
         return SpannableStringBuilder(spannable).apply {
+            val newLine = "\n"
             val id = " "
-            replace(start, end, id)
+            replace(start, end, newLine + id + newLine)
+            val totalLength = 2 * newLine.length + id.length
+
             val style = ImageStyle(uri.toString(), drawableProvider)
-            val range = SpanStyleRange(start, start + id.length, style)
-            updateRanges(range.start, id.length, 0)
-            removeFormatting(_ranges, start, start + id.length) { false /*remove all style*/ }
+            val range =
+                SpanStyleRange(start + newLine.length, start + id.length + newLine.length, style)
+
+            updateRanges(start, totalLength, 0)
+            removeFormatting(_ranges, start, start + totalLength) { false /*remove all style*/ }
             setSpan(range.format, range.start, range.end, style.spannableFlag)
+
             shouldUpdate = false
             _ranges.add(range)
         }

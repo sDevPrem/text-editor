@@ -16,26 +16,19 @@ object NoteUtils {
     }
 
     fun loadDrawableWithWidthConstraint(uri: Uri, context: Context): Drawable {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        val originalDrawable = Drawable.createFromStream(inputStream, uri.toString())
+        val originalDrawable = context.contentResolver.openInputStream(uri)?.use {
+            Drawable.createFromStream(it, uri.toString())
+        } ?: return AppCompatResources.getDrawable(context, R.drawable.ic_img)!!
 
         // Calculate the device width
         val displayMetrics = context.resources.displayMetrics
-        val deviceWidth = displayMetrics.widthPixels - 32.dpToPx
+        val deviceWidth = displayMetrics.widthPixels - 72.dpToPx
 
         // Calculate the new bounds based on device width
-        val originalWidth = originalDrawable?.intrinsicWidth
-            ?: return AppCompatResources.getDrawable(context, R.drawable.ic_img)!!
+        val originalWidth = originalDrawable.intrinsicWidth
 
-
-        val newWidth: Float
-        val scaleFactor = if (originalWidth > deviceWidth) {
-            newWidth = deviceWidth
-            deviceWidth / originalWidth
-        } else {
-            newWidth = originalWidth.toFloat()
-            1.0f
-        }
+        val scaleFactor = deviceWidth / originalWidth
+        val newWidth: Float = deviceWidth
 
         val originalHeight = originalDrawable.intrinsicHeight
         val newHeight = (originalHeight * scaleFactor).toInt()

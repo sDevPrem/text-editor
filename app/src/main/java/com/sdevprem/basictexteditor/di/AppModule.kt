@@ -2,11 +2,11 @@ package com.sdevprem.basictexteditor.di
 
 import android.content.Context
 import androidx.room.Room
-import com.sdevprem.basictexteditor.common.provider.DrawableProvider
 import com.sdevprem.basictexteditor.common.provider.DrawableProviderImpl
 import com.sdevprem.basictexteditor.common.provider.FontFamilyProviderImpl
-import com.sdevprem.basictexteditor.common.provider.FontProvider
 import com.sdevprem.basictexteditor.data.db.NotesDB
+import com.sdevprem.basictexteditor.domain.provider.DrawableProvider
+import com.sdevprem.basictexteditor.domain.provider.FontProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

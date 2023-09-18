@@ -1,12 +1,12 @@
 package com.sdevprem.basictexteditor.domain.mappers
 
 import com.sdevprem.basictexteditor.common.NoteUtils.filterInvalids
-import com.sdevprem.basictexteditor.common.provider.DrawableProvider
-import com.sdevprem.basictexteditor.common.provider.FontProvider
 import com.sdevprem.basictexteditor.data.model.Format
 import com.sdevprem.basictexteditor.data.model.FormatType
 import com.sdevprem.basictexteditor.data.model.Note
 import com.sdevprem.basictexteditor.domain.model.NoteWithStyle
+import com.sdevprem.basictexteditor.domain.provider.DrawableProvider
+import com.sdevprem.basictexteditor.domain.provider.FontProvider
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.FontTypeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle

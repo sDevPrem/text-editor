@@ -11,6 +11,10 @@ class SaveNoteWithStyleUseCase @Inject constructor(
     private val repository: NotesRepository
 ) {
 
+    /**
+     * Create a new [NoteWithStyle] if its id is less than 0 else
+     * update it
+     */
     suspend operator fun invoke(noteWithStyle: NoteWithStyle) {
         if (noteWithStyle.id > 0)
             repository.updateNote(noteWithStyle.toNote())

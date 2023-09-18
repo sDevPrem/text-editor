@@ -35,7 +35,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return FragmentHomeBinding.inflate(
             inflater,
             container,
@@ -47,6 +47,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
+
         addNote.setOnClickListener {
             findNavController().navigate(
                 HomeFragmentDirections.actionHomeFragmentToEditorFragment()
@@ -63,6 +64,8 @@ class HomeFragment : Fragment() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.notes.collectLatest {
                     adapter.submitList(it)
+
+                    //change visibility of view according to the list
                     noteList.isVisible = it.isNotEmpty()
                     emptyLayout.isVisible = it.isEmpty()
                 }

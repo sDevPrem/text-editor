@@ -12,10 +12,11 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     repository: NotesRepository
 ) : ViewModel() {
+    private val timeOutMillis = 5_000L
     val notes = repository.getNotes()
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
+            started = SharingStarted.WhileSubscribed(timeOutMillis),
             initialValue = emptyList()
         )
 }

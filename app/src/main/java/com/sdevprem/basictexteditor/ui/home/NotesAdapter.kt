@@ -13,6 +13,8 @@ class NoteAdapter(
     private val onNoteClicked: (Note) -> Unit
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(ComparatorDiffUtil()) {
 
+    class NoteViewHolder(val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val binding = NoteItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NoteViewHolder(binding)
@@ -24,8 +26,6 @@ class NoteAdapter(
             root.setOnClickListener { _ -> onNoteClicked(it) }
         }
     }
-
-    class NoteViewHolder(val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root)
 
     class ComparatorDiffUtil : DiffUtil.ItemCallback<Note>() {
         override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {

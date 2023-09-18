@@ -10,15 +10,28 @@ import com.sdevprem.basictexteditor.R
 import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 
 object NoteUtils {
+
+    /**
+     * Only ranges whose start is less than end and end should be less than
+     * [text] length will be considered as valid
+     */
     fun List<SpanStyleRange>.filterInvalids(text: String) = filter {
         it.start < it.end &&
                 it.end <= text.length
     }
 
-    fun loadDrawableWithWidthConstraint(uri: Uri, context: Context): Drawable {
+    /**
+     * Fetch the image form the [uri] and create and return a [Drawable]
+     * whose width is equal to the device width (minus [paddingPx])
+     */
+    fun loadDrawableWithWidthConstraint(
+        uri: Uri,
+        context: Context,
+        paddingPx: Float = 72.dpToPx
+    ): Drawable {
         val originalDrawable = context.contentResolver.openInputStream(uri)?.use {
             Drawable.createFromStream(it, uri.toString())
-        } ?: return AppCompatResources.getDrawable(context, R.drawable.ic_img)!!
+        } ?: AppCompatResources.getDrawable(context, R.drawable.ic_img)!!
 
         // Calculate the device width
         val displayMetrics = context.resources.displayMetrics

@@ -4,7 +4,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
-import com.sdevprem.basictexteditor.common.provider.FontProvider
+import com.sdevprem.basictexteditor.domain.provider.FontProvider
 
 
 class FontsTypeFace(

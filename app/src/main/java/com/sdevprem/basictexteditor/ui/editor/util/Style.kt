@@ -8,8 +8,8 @@ import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import androidx.core.net.toUri
 import androidx.core.text.getSpans
-import com.sdevprem.basictexteditor.common.provider.DrawableProvider
-import com.sdevprem.basictexteditor.common.provider.FontProvider
+import com.sdevprem.basictexteditor.domain.provider.DrawableProvider
+import com.sdevprem.basictexteditor.domain.provider.FontProvider
 
 sealed class Style {
     abstract val spannableFlag: Int

@@ -1,4 +1,4 @@
-package com.sdevprem.basictexteditor.common.provider
+package com.sdevprem.basictexteditor.domain.provider
 
 import android.graphics.drawable.Drawable
 import android.net.Uri

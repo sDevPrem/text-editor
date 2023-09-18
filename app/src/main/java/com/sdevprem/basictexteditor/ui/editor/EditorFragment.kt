@@ -20,8 +20,8 @@ import com.sdevprem.basictexteditor.R
 import com.sdevprem.basictexteditor.common.NoteUtils
 import com.sdevprem.basictexteditor.common.animateDown
 import com.sdevprem.basictexteditor.common.animateUp
-import com.sdevprem.basictexteditor.common.provider.FontProvider
 import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
+import com.sdevprem.basictexteditor.domain.provider.FontProvider
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
 import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
@@ -40,6 +40,7 @@ class EditorFragment : Fragment() {
 
     private val viewModel by viewModels<EditorViewModel>()
     private val args by navArgs<EditorFragmentArgs>()
+    private var shouldUpdate = true
 
     @Inject
     lateinit var fontProvider: FontProvider
@@ -52,9 +53,14 @@ class EditorFragment : Fragment() {
                     Intent.FLAG_GRANT_READ_URI_PERMISSION
                 )
                 with(binding.etEditor) {
-                    val newS = viewModel.insertImage(it, text, selectionStart, selectionEnd)
-                    val cursorPos = selectionEnd + (newS.length - text.length)
-                    setText(newS, TextView.BufferType.SPANNABLE)
+                    val newSpannable = viewModel.insertImage(it, text, selectionStart, selectionEnd)
+
+                    //get the new cursor position according to
+                    //the difference
+                    val cursorPos = selectionEnd + (newSpannable.length - text.length)
+
+                    shouldUpdate = false
+                    setText(newSpannable, TextView.BufferType.SPANNABLE)
                     setSelection(cursorPos)
                 }
             }
@@ -154,7 +160,11 @@ class EditorFragment : Fragment() {
         }
 
         etEditor.doOnTextChanged { _, start, before, count ->
-            viewModel.updateRanges(start, count, before)
+            if (shouldUpdate) {
+                viewModel.updateRanges(start, count, before)
+            } else {
+                shouldUpdate = true
+            }
         }
 
         if (args.id < 0)
@@ -186,6 +196,9 @@ class EditorFragment : Fragment() {
         }
     }
 
+    /**
+     * Increase the font according to given [sizeMultiplier]
+     */
     fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
         closeSelector(inFontSize.root.id)
         viewModel.toggleFormatting(
@@ -197,9 +210,7 @@ class EditorFragment : Fragment() {
     }
 
 
-    fun closeSelector(
-        viewId: Int
-    ) = when (viewId) {
+    fun closeSelector(viewId: Int) = when (viewId) {
         binding.inFontSize.root.id -> binding.inFontSize.root.animateDown()
         binding.inFontName.root.id -> binding.inFontName.root.animateDown()
         else -> {}
@@ -215,6 +226,7 @@ class EditorFragment : Fragment() {
         )
     }
 
+    //apply ranges to the editor editTextView
     private fun applyRange(range: List<SpanStyleRange>) = with(binding.etEditor.text) {
         range.forEach {
             if (it.start < it.end)

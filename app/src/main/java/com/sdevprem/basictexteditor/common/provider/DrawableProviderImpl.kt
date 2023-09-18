@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import com.sdevprem.basictexteditor.common.NoteUtils
+import com.sdevprem.basictexteditor.domain.provider.DrawableProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton

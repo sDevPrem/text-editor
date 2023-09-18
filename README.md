@@ -17,9 +17,9 @@ Build with kotlin and follows MVVM architecture and single activity architecture
 
 # Screenshot
 
-|                                                                                                                       |                                                                                                                       |                                                                                                                       |
-|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| ![Screenshot_1695014891](https://github.com/sDevPrem/run-track/assets/130966261/9288e994-33c1-4466-b34f-cb03a1802556) | ![Screenshot_1695014888](https://github.com/sDevPrem/run-track/assets/130966261/3ba73724-fd17-4f02-acba-b3e1e35111b3) | ![Screenshot_1695014882](https://github.com/sDevPrem/run-track/assets/130966261/944418f8-1601-4c09-85b5-dd5852bbe591) |
+|                                                                                                                         |                                                                                                                       |                                                                                                                       |
+|-------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| ![Screenshot_1695014891](https://github.com/sDevPrem/text-editor/assets/130966261/81a09078-cc7b-41cf-948a-f0681b2b6c16) | ![Screenshot_1695014888](https://github.com/sDevPrem/run-track/assets/130966261/3ba73724-fd17-4f02-acba-b3e1e35111b3) | ![Screenshot_1695014882](https://github.com/sDevPrem/run-track/assets/130966261/944418f8-1601-4c09-85b5-dd5852bbe591) |
 
 ## How to use
 
@@ -47,6 +47,10 @@ To store and manage running statistics.
 
 [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) :
 For injecting dependencies.
+
+[Data Binding](https://developer.android.com/topic/libraries/data-binding)
+and [View Binding](https://developer.android.com/topic/libraries/view-binding):
+For easy integration of data with UI.
 
 [Timber](https://github.com/JakeWharton/timber): For logging.
 

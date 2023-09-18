@@ -2,6 +2,7 @@ package com.sdevprem.basictexteditor.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -29,10 +30,12 @@ class NoteAdapter(
     inner class NoteViewHolder(private val binding: NoteItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(note: Note) {
-            binding.title.text = note.title
-            binding.desc.text = note.body
-            binding.root.setOnClickListener {
+        fun bind(note: Note) = with(binding) {
+            title.text = note.title
+            desc.text = note.body
+            if (note.title.isEmpty())
+                title.isVisible = false
+            root.setOnClickListener {
                 onNoteClicked(note)
             }
         }

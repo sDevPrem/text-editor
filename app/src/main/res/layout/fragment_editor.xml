@@ -16,7 +16,7 @@
         android:layout_height="match_parent"
         tools:context=".ui.editor.EditorFragment">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/editor_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,6 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:menu="@menu/editor_menu"
+            app:navigationIconTint="?attr/colorOnSurfaceVariant"
             app:navigationIcon="@drawable/ic_arrow_back">
 
             <EditText
@@ -34,8 +35,10 @@
                 android:hint="Title"
                 android:singleLine="true"
                 android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textStyle="bold"
                 android:textAppearance="?attr/textAppearanceTitleLarge" />
-        </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -58,6 +61,7 @@
                 android:background="@null"
                 android:gravity="start"
                 android:hint="Write here"
+                android:textColor="?attr/colorOnSurface"
                 android:paddingBottom="128dp"
                 app:lineHeight="28sp" />
 

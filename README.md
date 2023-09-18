@@ -1,7 +1,8 @@
 # Text Editor
 
 A text - editor which allows you to save formatted text with different styles and images.
-Build with kotlin and follows MVVM architecture and single activity architecture.
+Build with kotlin and follows MVVM, Clean architecture for data flow and
+single activity architecture for UI.
 
 ## Features
 
@@ -26,13 +27,40 @@ Build with kotlin and follows MVVM architecture and single activity architecture
 Write, select and format that text using any formatting feature
 at the bottom.
 
-## Project Package Structure
+## Project Structure
 
-* `data`: Contains database entity and database related classes.
-* `di`: Contains Hilt Module.
-* `Domain`: Contains common use cases like converting database note
+* [data](app/src/main/java/com/sdevprem/basictexteditor/data): Contains database entity and database
+  related classes.
+* [di](app/src/main/java/com/sdevprem/basictexteditor/di): Contains Hilt Module.
+* [Domain](app/src/main/java/com/sdevprem/basictexteditor/domain): Contains common use cases like
+  converting database note
   to a format that can be understandable to UI layer and vice-versa.
-* `UI`: Contains UI related classes like fragment.
+* [ui](app/src/main/java/com/sdevprem/basictexteditor/ui): Contains UI related classes like
+  fragment.
+
+![Editor Architecture ](https://github.com/sDevPrem/text-editor/assets/130966261/1cfca646-97c4-4c45-a685-15cb7efd0c34)
+
+### Editor
+
+[EditorFragment](app/src/main/java/com/sdevprem/basictexteditor/ui/editor/EditorFragment.kt)
+is the UI where user edits and formats their notes. It maintains a list
+of [Range](app/src/main/java/com/sdevprem/basictexteditor/ui/editor/util/Range.kt)
+of [Style](app/src/main/java/com/sdevprem/basictexteditor/ui/editor/util/Style.kt) in the
+[EditorViewModel](app/src/main/java/com/sdevprem/basictexteditor/ui/editor/EditorViewModel.kt)
+which updates whenever user enters or removes any text in the editor accordingly to remain updated
+with the editor spans. When user selects a text and click on the formatting options, it creates a
+range for that formatting according to the selection.
+
+When user finishes editing, it creates and sends
+the [NoteWithStyle](app/src/main/java/com/sdevprem/basictexteditor/domain/model/NoteWithStyle.kt)
+to the [domain layer](app/src/main/java/com/sdevprem/basictexteditor/domain/usecase) which converts
+it to a
+suitable [Note](app/src/main/java/com/sdevprem/basictexteditor/data/model/Note.kt) format which can
+be stored in the database. The domain layer depends
+on [Asset Providers](app/src/main/java/com/sdevprem/basictexteditor/domain/provider)
+which helps it to convert images and fonts to a
+suitable [Style](app/src/main/java/com/sdevprem/basictexteditor/ui/editor/util/Style.kt)
+when fetching the notes from the database.
 
 ## Build With
 

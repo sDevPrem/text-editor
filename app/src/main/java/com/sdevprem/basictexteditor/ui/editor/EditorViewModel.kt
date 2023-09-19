@@ -14,6 +14,8 @@ import com.sdevprem.basictexteditor.domain.usecase.GetNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.domain.usecase.SaveNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.ui.editor.util.FontTypeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle
+import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
+import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
 import com.sdevprem.basictexteditor.ui.editor.util.Style
 import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.copy
@@ -52,7 +54,6 @@ class EditorViewModel @Inject constructor(
                     _editorAction.emit(EditorViewAction.ShowNote(it ?: NoteWithStyle()))
                     _ranges.clear()
                     it?.let { _ranges.addAll(it.ranges) }
-
                 }
                 .launchIn(viewModelScope)
     }
@@ -194,7 +195,7 @@ class EditorViewModel @Inject constructor(
      * add that [style] between that range.
      */
     fun toggleFormatting(
-        style: Style,
+        style: SimpleStyle,
         spannable: Spannable,
         selectionStart: Int,
         selectionEnd: Int
@@ -204,32 +205,48 @@ class EditorViewModel @Inject constructor(
 
         if (style.isSpannableFormatted(selectionStart, selectionEnd, spannable)) {
             //if range is fully formatted with the style then remove only
-            removeFormatting(spannable, style, selectionStart, selectionEnd)
+            removeStyle(spannable, selectionStart, selectionEnd, style::class.java)
         } else {
             //if range is not fully formatted with style, then remove it first
-            //and then apply it again
-            removeFormatting(spannable, style, selectionStart, selectionEnd)
-            val range = StyleRange(style, selectionEnd, selectionStart)
-            spannable.setSpan(range.format, selectionStart, selectionEnd, style.spannableFlag)
-            _ranges.add(range)
+            //and then format it again
+            removeStyle(spannable, selectionStart, selectionEnd, style::class.java)
+            style.format(selectionStart, selectionEnd, spannable)
         }
 
     }
 
-    /**
-     * Applies the font corresponding to the [fontName] from [start] to [end]
-     * in the [spannable]
-     */
-    fun applyFont(start: Int, end: Int, spannable: Spannable, fontName: String) {
-        toggleFormatting(FontTypeStyle(fontName, fontProvider), spannable, start, end)
+    fun changeFontSize(start: Int, end: Int, spannable: Spannable, sizeMultiplier: Float) {
+        if (sizeMultiplier == RelativeFontSizeStyle.DEFAULT_RELATIVE_SIZE) {
+            removeStyle(spannable, start, end, RelativeFontSizeStyle::class.java)
+        } else {
+            removeStyle(spannable, start, end, RelativeFontSizeStyle::class.java)
+            RelativeFontSizeStyle(sizeMultiplier).format(start, end, spannable)
+        }
     }
 
+    fun applyFont(start: Int, end: Int, spannable: Spannable, fontName: String) {
+        removeFont(spannable, start, end)
+        FontTypeStyle(fontName, fontProvider).format(start, end, spannable)
+    }
+
+    private fun Style.format(start: Int, end: Int, spannable: Spannable) {
+        val range = StyleRange(this, end, start)
+        spannable.setSpan(range.format, start, end, spannableFlag)
+        _ranges.add(range)
+    }
+
+
     /**
-     * Removes the [style] if exist between [start] and [end] from the [spannable]
+     * Removes the instance of [Style] if exist between [start] and [end] in the [spannable]
      */
-    private fun removeFormatting(spannable: Spannable, style: Style, start: Int, end: Int) {
+    private fun <T : Style> removeStyle(
+        spannable: Spannable,
+        start: Int,
+        end: Int,
+        styleClazz: Class<T>
+    ) {
         spannable.removeFormatting(_ranges, start, end) {
-            !style::class.java.isInstance(it)
+            !styleClazz.isInstance(it)
         }
     }
 

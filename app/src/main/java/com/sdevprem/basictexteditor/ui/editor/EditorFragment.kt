@@ -24,7 +24,6 @@ import com.sdevprem.basictexteditor.databinding.FragmentEditorBinding
 import com.sdevprem.basictexteditor.domain.provider.FontProvider
 import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
-import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
 import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
@@ -203,11 +202,11 @@ class EditorFragment : Fragment() {
     fun increaseFontSize(sizeMultiplier: Float) = with(binding) {
         //called from the layout using data binding
         closeSelector(inFontSize.root.id)
-        viewModel.toggleFormatting(
-            RelativeFontSizeStyle(sizeMultiplier),
-            etEditor.text,
+        viewModel.changeFontSize(
             etEditor.selectionStart,
             etEditor.selectionEnd,
+            etEditor.text,
+            sizeMultiplier,
         )
     }
 

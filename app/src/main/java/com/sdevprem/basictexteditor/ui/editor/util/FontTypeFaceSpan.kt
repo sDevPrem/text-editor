@@ -6,10 +6,7 @@ import android.text.TextPaint
 import android.text.style.MetricAffectingSpan
 
 
-class FontsTypeFaceSpan(
-    val fontName: String,
-    private val fontTypeface: Typeface
-) : MetricAffectingSpan() {
+class FontTypeFaceSpan(private val fontTypeface: Typeface) : MetricAffectingSpan() {
 
     override fun updateDrawState(ds: TextPaint?) {
         applyCustomTypeFace(ds!!)

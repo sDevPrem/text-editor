@@ -24,11 +24,11 @@ fun StyleRange.toFormat(): Format {
             start,
             end,
             FormatType.FONT_SIZE,
-            listOf(style.data.toString())
+            listOf(style.sizeMultiplier.toString())
         )
 
-        is ImageStyle -> Format(start, end, FormatType.IMAGE, listOf(style.data))
-        is FontTypeStyle -> Format(start, end, FormatType.FONT_TYPE, listOf(style.data))
+        is ImageStyle -> Format(start, end, FormatType.IMAGE, listOf(style.imgUri))
+        is FontTypeStyle -> Format(start, end, FormatType.FONT_TYPE, listOf(style.fontName))
     }
 }
 

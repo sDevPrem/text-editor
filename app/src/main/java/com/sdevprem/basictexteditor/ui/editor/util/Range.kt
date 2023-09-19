@@ -37,11 +37,8 @@ fun Style.createFormat() = when (this) {
     is BoldStyle -> StyleSpan(Typeface.BOLD)
     is ItalicStyle -> StyleSpan(Typeface.ITALIC)
     is UnderLineStyle -> UnderlineSpan()
-    is RelativeFontSizeStyle -> RelativeSizeSpan(data)
+    is RelativeFontSizeStyle -> RelativeSizeSpan(sizeMultiplier)
     is ImageStyle -> ImageSpan(getDrawable())
-    is FontTypeStyle -> FontsTypeFaceSpan(
-        data,
-        getFontTypeFace()
-    )
+    is FontTypeStyle -> FontTypeFaceSpan(getFontTypeFace())
 }
 

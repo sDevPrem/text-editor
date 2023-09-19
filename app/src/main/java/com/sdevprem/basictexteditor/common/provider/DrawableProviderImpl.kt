@@ -15,6 +15,9 @@ class DrawableProviderImpl @Inject constructor(
     private val context: Context
 ) : DrawableProvider {
 
+    /**
+     * Fetches and provides [Drawable] from the [uri]
+     */
     override fun getDrawable(uri: Uri): Drawable = NoteUtils
         .loadDrawableWithWidthConstraint(uri, context)
 

@@ -12,11 +12,12 @@ class FontFamilyProviderImpl @Inject constructor(
     @ApplicationContext
     private val context: Context
 ) : FontProvider {
-    override fun getFont(fontName: String): Typeface =
-        Typeface.createFromAsset(
-            context.assets,
-            fontName
-        )
 
+    /**
+     * Returns the [Typeface] corresponding to the
+     * font of [fontName]
+     */
+    override fun getFont(fontName: String): Typeface =
+        Typeface.createFromAsset(context.assets, fontName)
 
 }

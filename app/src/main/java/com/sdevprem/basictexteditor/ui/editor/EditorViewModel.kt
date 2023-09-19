@@ -221,7 +221,7 @@ class EditorViewModel @Inject constructor(
 
 
     /**
-     * Removes the instance of [Style] if exist between [start] and [end]
+     * Removes the the [Style] if exist between [start] and [end]
      */
     private fun <T : Style> Spannable.removeStyle(
         start: Int,
@@ -232,17 +232,13 @@ class EditorViewModel @Inject constructor(
     }
 
     /**
-     * Removes formatting from the given [formattingRanges]
-     * @param [formattingRanges] : The list of range in which the formatting need to be removed.
-     * @param [selectionStart] : The start of the selection.
-     * @param [selectionEnd] : The end of the selection.
-     * @param [skip] : Should returns false to skip the given style for further checking,
-     * else true to check and remove.
+     * Removes text formatting corresponding to the given [formattingRanges] from [start] to [end]
+     * if [skip] returns false. [formattingRanges] will be updated according to the new changes.
      */
     private fun Spannable.removeFormatting(
         formattingRanges: MutableList<StyleRange>,
-        selectionStart: Int,
-        selectionEnd: Int,
+        start: Int,
+        end: Int,
         skip: (Style) -> Boolean
     ) {
         val newRanges: MutableList<StyleRange> = ArrayList()
@@ -250,18 +246,18 @@ class EditorViewModel @Inject constructor(
             if (skip(range.style))
                 return@removeIf false
 
-            if (range.start >= selectionEnd || range.end <= selectionStart) {
+            if (range.start >= end || range.end <= start) {
                 //range: --         --
                 //selection:   ---
                 // Range is outside the selected text, no change needed
                 return@removeIf false
-            } else if (range.start >= selectionStart && range.end <= selectionEnd) {
+            } else if (range.start >= start && range.end <= end) {
                 //range:       ------
                 //selection: -----------
                 //Range is completely inside the selected text, remove it
                 removeSpan(range.format)
                 return@removeIf true
-            } else if (range.start < selectionStart && range.end > selectionEnd) {
+            } else if (range.start < start && range.end > end) {
                 //range:       ------------
                 //selection:     -------
                 //Reminder:    --        --
@@ -273,9 +269,9 @@ class EditorViewModel @Inject constructor(
                 //the end of the second range
                 val secondEnd = range.end
                 //move end of the first range to the start of the selection
-                range.end = selectionStart
+                range.end = start
                 //copy that range from selection end to second end
-                val secondRange = range.copy(selectionEnd, secondEnd)
+                val secondRange = range.copy(end, secondEnd)
 
                 //now apply both ranges
                 setSpan(range.format, range.start, range.end, range.style.spannableFlag)
@@ -286,7 +282,7 @@ class EditorViewModel @Inject constructor(
                     range.style.spannableFlag
                 )
                 newRanges.add(secondRange)
-            } else if (range.start < selectionStart) {
+            } else if (range.start < start) {
                 //range:       -----------
                 //selection:     ------------
                 //Reminder:    --
@@ -296,10 +292,10 @@ class EditorViewModel @Inject constructor(
                 setSpan(
                     range.format,
                     range.start,
-                    selectionStart,
+                    start,
                     range.style.spannableFlag
                 )
-                range.end = selectionStart
+                range.end = start
             } else {
                 //range:       -----------
                 //selection: -----------
@@ -308,11 +304,11 @@ class EditorViewModel @Inject constructor(
                 //Make its start to the end of the selection
                 setSpan(
                     range.format,
-                    selectionEnd,
+                    end,
                     range.end,
                     range.style.spannableFlag
                 )
-                range.start = selectionEnd
+                range.start = end
             }
             return@removeIf false
         }

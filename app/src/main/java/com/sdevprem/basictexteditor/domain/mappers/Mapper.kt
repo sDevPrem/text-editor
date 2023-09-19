@@ -12,10 +12,10 @@ import com.sdevprem.basictexteditor.ui.editor.util.FontTypeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
 import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
-import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
+import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 
-fun SpanStyleRange.toFormat(): Format {
+fun StyleRange.toFormat(): Format {
     return when (style) {
         is BoldStyle -> Format(start, end, FormatType.BOLD)
         is ItalicStyle -> Format(start, end, FormatType.ITALICS)
@@ -32,16 +32,16 @@ fun SpanStyleRange.toFormat(): Format {
     }
 }
 
-fun Format.toStyleSpanRange(
+fun Format.toStyleRange(
     drawableProvider: DrawableProvider,
     fontProvider: FontProvider
 ) = when (formatType) {
-    FormatType.BOLD -> SpanStyleRange(start, end, BoldStyle)
-    FormatType.ITALICS -> SpanStyleRange(start, end, ItalicStyle)
-    FormatType.UNDERLINE -> SpanStyleRange(start, end, UnderLineStyle)
-    FormatType.FONT_SIZE -> SpanStyleRange(start, end, RelativeFontSizeStyle(data[0].toFloat()))
-    FormatType.IMAGE -> SpanStyleRange(start, end, ImageStyle(data[0], drawableProvider))
-    FormatType.FONT_TYPE -> SpanStyleRange(start, end, FontTypeStyle(data[0], fontProvider))
+    FormatType.BOLD -> StyleRange(BoldStyle, end, start)
+    FormatType.ITALICS -> StyleRange(ItalicStyle, end, start)
+    FormatType.UNDERLINE -> StyleRange(UnderLineStyle, end, start)
+    FormatType.FONT_SIZE -> StyleRange(RelativeFontSizeStyle(data[0].toFloat()), end, start)
+    FormatType.IMAGE -> StyleRange(ImageStyle(data[0], drawableProvider), end, start)
+    FormatType.FONT_TYPE -> StyleRange(FontTypeStyle(data[0], fontProvider), end, start)
 }
 
 fun Note.toNoteWithStyle(
@@ -50,7 +50,7 @@ fun Note.toNoteWithStyle(
 ) = NoteWithStyle(
     title = title,
     body = body,
-    ranges = formatList.map { it.toStyleSpanRange(drawableProvider, fontProvider) },
+    ranges = formatList.map { it.toStyleRange(drawableProvider, fontProvider) },
     id = id
 )
 

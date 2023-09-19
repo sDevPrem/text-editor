@@ -7,7 +7,7 @@ import android.net.Uri
 import android.util.TypedValue
 import androidx.appcompat.content.res.AppCompatResources
 import com.sdevprem.basictexteditor.R
-import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
+import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 
 object NoteUtils {
 
@@ -15,7 +15,7 @@ object NoteUtils {
      * Only ranges whose start is less than end and end should be less than
      * [text] length will be considered as valid
      */
-    fun List<SpanStyleRange>.filterInvalids(text: String) = filter {
+    fun List<StyleRange>.filterInvalids(text: String) = filter {
         it.start < it.end &&
                 it.end <= text.length
     }

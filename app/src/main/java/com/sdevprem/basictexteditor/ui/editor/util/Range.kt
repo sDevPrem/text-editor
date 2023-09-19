@@ -13,37 +13,35 @@ sealed class Range(
     val format: Any
 )
 
-class SpanStyleRange(
-    start: Int,
-    end: Int,
+class StyleRange(
     val style: Style,
-    format: Any = when (style) {
-        is BoldStyle -> StyleSpan(Typeface.BOLD)
-        is ItalicStyle -> StyleSpan(Typeface.ITALIC)
-        is UnderLineStyle -> UnderlineSpan()
-        is RelativeFontSizeStyle -> RelativeSizeSpan(style.data)
-        is ImageStyle -> ImageSpan(style.getDrawable())
-        is FontTypeStyle -> FontsTypeFace(
-            style.data,
-            style.fontProvider
-        )
-    }
-) : Range(
-    start,
-    end,
-    format
-)
+    end: Int,
+    start: Int,
+    format: Any = style.createFormat()
+) : Range(start, end, format)
 
-fun SpanStyleRange.copy(
+fun StyleRange.copy(
     start: Int = this.start,
     end: Int = this.end,
     style: Style = this.style,
-) = SpanStyleRange(start, end, style)
+) = StyleRange(style, end, start)
 
-fun SpanStyleRange.deepCopy(
+fun StyleRange.deepCopy(
     start: Int = this.start,
     end: Int = this.end,
     style: Style = this.style,
     format: Any = this.format
-) = SpanStyleRange(start, end, style, format)
+) = StyleRange(style, end, start, format)
+
+fun Style.createFormat() = when (this) {
+    is BoldStyle -> StyleSpan(Typeface.BOLD)
+    is ItalicStyle -> StyleSpan(Typeface.ITALIC)
+    is UnderLineStyle -> UnderlineSpan()
+    is RelativeFontSizeStyle -> RelativeSizeSpan(data)
+    is ImageStyle -> ImageSpan(getDrawable())
+    is FontTypeStyle -> FontsTypeFaceSpan(
+        data,
+        getFontTypeFace()
+    )
+}
 

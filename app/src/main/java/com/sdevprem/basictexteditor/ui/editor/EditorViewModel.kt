@@ -14,8 +14,8 @@ import com.sdevprem.basictexteditor.domain.usecase.GetNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.domain.usecase.SaveNoteWithStyleUseCase
 import com.sdevprem.basictexteditor.ui.editor.util.FontTypeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ImageStyle
-import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.Style
+import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.copy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,8 +41,8 @@ class EditorViewModel @Inject constructor(
 
     private val id: Long
 
-    private val _ranges: MutableList<SpanStyleRange> = mutableListOf()
-    private val ranges: List<SpanStyleRange> = _ranges
+    private val _ranges: MutableList<StyleRange> = mutableListOf()
+    private val ranges: List<StyleRange> = _ranges
 
     init {
         id = EditorFragmentArgs.fromSavedStateHandle(savedStateHandle).id
@@ -85,10 +85,10 @@ class EditorViewModel @Inject constructor(
             val totalLength = 2 * newLine.length + id.length
             val style = ImageStyle(uri.toString(), drawableProvider)
             val range =
-                SpanStyleRange(
-                    selectionStart + newLine.length,
+                StyleRange(
+                    style,
                     selectionStart + id.length + newLine.length,
-                    style
+                    selectionStart + newLine.length
                 )
 
             //replace the selection with new line
@@ -209,7 +209,7 @@ class EditorViewModel @Inject constructor(
             //if range is not fully formatted with style, then remove it first
             //and then apply it again
             removeFormatting(spannable, style, selectionStart, selectionEnd)
-            val range = SpanStyleRange(selectionStart, selectionEnd, style)
+            val range = StyleRange(style, selectionEnd, selectionStart)
             spannable.setSpan(range.format, selectionStart, selectionEnd, style.spannableFlag)
             _ranges.add(range)
         }
@@ -242,12 +242,12 @@ class EditorViewModel @Inject constructor(
      * else true to check and remove.
      */
     private fun Spannable.removeFormatting(
-        formattingRanges: MutableList<SpanStyleRange>,
+        formattingRanges: MutableList<StyleRange>,
         selectionStart: Int,
         selectionEnd: Int,
         skip: (Style) -> Boolean
     ) {
-        val newRanges: MutableList<SpanStyleRange> = ArrayList()
+        val newRanges: MutableList<StyleRange> = ArrayList()
         formattingRanges.removeIf { range ->
             if (skip(range.style))
                 return@removeIf false

@@ -26,7 +26,7 @@ import com.sdevprem.basictexteditor.ui.editor.util.BoldStyle
 import com.sdevprem.basictexteditor.ui.editor.util.ItalicStyle
 import com.sdevprem.basictexteditor.ui.editor.util.RelativeFontSizeStyle
 import com.sdevprem.basictexteditor.ui.editor.util.SimpleStyle
-import com.sdevprem.basictexteditor.ui.editor.util.SpanStyleRange
+import com.sdevprem.basictexteditor.ui.editor.util.StyleRange
 import com.sdevprem.basictexteditor.ui.editor.util.UnderLineStyle
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -230,7 +230,7 @@ class EditorFragment : Fragment() {
     }
 
     //apply ranges to the editor editTextView
-    private fun applyRange(range: List<SpanStyleRange>) = with(binding.etEditor.text) {
+    private fun applyRange(range: List<StyleRange>) = with(binding.etEditor.text) {
         range.forEach {
             if (it.start < it.end)
                 setSpan(it.format, it.start, it.end, it.style.spannableFlag)

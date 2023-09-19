@@ -16,13 +16,12 @@ sealed class Style {
     abstract fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean
 }
 
-sealed class ParameterStyle<T>(
-    val data: T
-) : Style()
+sealed class ParameterStyle<T>(val data: T) : Style()
 
 sealed class SimpleStyle : Style()
 
 object BoldStyle : SimpleStyle() {
+
     override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
 
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
@@ -36,6 +35,7 @@ object BoldStyle : SimpleStyle() {
 }
 
 object ItalicStyle : SimpleStyle() {
+
     override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         for (i in start until end) {
@@ -62,29 +62,31 @@ object UnderLineStyle : SimpleStyle() {
 
 class FontTypeStyle(
     fontName: String,
-    val fontProvider: FontProvider
+    private val fontProvider: FontProvider
 ) : ParameterStyle<String>(fontName) {
-    private val fontName = data
 
+    private val fontName = data
     override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         for (i in start until end) {
             val matched =
-                spannable.getSpans<FontsTypeFace>(i, i + 1).any { it.fontName == fontName }
+                spannable.getSpans<FontsTypeFaceSpan>(i, i + 1).any { it.fontName == fontName }
             if (!matched)
                 return false
         }
         return true
     }
+
+    fun getFontTypeFace() = fontProvider.getFont(fontName)
 }
 
-class RelativeFontSizeStyle(
-    sizeMultiplier: Float
-) : ParameterStyle<Float>(sizeMultiplier) {
+class RelativeFontSizeStyle(sizeMultiplier: Float) : ParameterStyle<Float>(sizeMultiplier) {
 
     override val spannableFlag = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
     private val defaultValue = 1f
     private val multiplier = sizeMultiplier
+
     override fun isSpannableFormatted(start: Int, end: Int, spannable: Spannable): Boolean {
         var isFormatted = false
 

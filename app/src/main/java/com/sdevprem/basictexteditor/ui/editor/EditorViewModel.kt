@@ -63,62 +63,44 @@ class EditorViewModel @Inject constructor(
      * from the [spannable]
      */
     fun removeFont(spannable: Spannable, start: Int, end: Int) {
-        spannable.removeFormatting(_ranges, start, end) {
-            //skip non font styles
-            !FontTypeStyle::class.java.isInstance(it)
-        }
+        spannable.removeStyle(start, end, FontTypeStyle::class.java)
     }
 
     /**
-     * Insert the image corresponding to the [uri] in the [spannable] from the [selectionStart]
-     * to the [selectionEnd] in a new line and return it.
+     * Insert the image corresponding to the [uri] in the [spannable] from the [start]
+     * to the [end] in a new line and return it.
      */
-    fun insertImage(
-        uri: Uri,
-        spannable: Spannable,
-        selectionStart: Int,
-        selectionEnd: Int
-    ): Spannable {
+    fun insertImage(uri: Uri, spannable: Spannable, start: Int, end: Int): Spannable {
 
         return SpannableStringBuilder(spannable).apply {
             val newLine = "\n"
-            val id = " "
-            val totalLength = 2 * newLine.length + id.length
+            val imgPlaceholder = " "
+            val totalLength = 2 * newLine.length + imgPlaceholder.length
             val style = ImageStyle(uri.toString(), drawableProvider)
-            val range =
-                StyleRange(
-                    style,
-                    selectionStart + id.length + newLine.length,
-                    selectionStart + newLine.length
-                )
 
             //replace the selection with new line
-            replace(selectionStart, selectionEnd, newLine + id + newLine)
+            replace(start, end, newLine + imgPlaceholder + newLine)
 
             //update the ranges according to new line entered above
-            updateRanges(selectionStart, totalLength, 0)
+            updateRanges(start, totalLength, 0)
 
-            //remove any formatting from the selection
-            removeFormatting(
-                _ranges,
-                selectionStart,
-                selectionStart + totalLength
-            ) { false /*remove all style*/ }
+            //remove all the formatting from the selection
+            removeFormatting(_ranges, start, start + totalLength) { false }
 
-            //insert image
-            setSpan(range.format, range.start, range.end, style.spannableFlag)
-
-            //add the range
-            _ranges.add(range)
+            style.format(
+                start + newLine.length,
+                start + imgPlaceholder.length + newLine.length,
+                this
+            )
         }
     }
 
     /**
      * Updates ranges according to where and how many
      * character changed in the text.
-     * [start] : The start index from where user started entering text
-     * [countAfter] : The count of the character user entered
-     * [countBefore] : The count of the character that have been replaced
+     * @param [start] : The start index from where user started entering text
+     * @param [countAfter] : The count of the character user entered
+     * @param [countBefore] : The count of the character that have been replaced
      */
     fun updateRanges(start: Int, countAfter: Int, countBefore: Int) {
         val delta = countAfter - countBefore
@@ -191,35 +173,34 @@ class EditorViewModel @Inject constructor(
     }
 
     /**
-     * Remove the [style] if it exist between [selectionStart] and [selectionEnd] else
+     * Remove the [style] if it exist between [start] and [end] else
      * add that [style] between that range.
      */
-    fun toggleFormatting(
-        style: SimpleStyle,
-        spannable: Spannable,
-        selectionStart: Int,
-        selectionEnd: Int
-    ) {
-        if (selectionStart == selectionEnd)
+    fun toggleFormatting(style: SimpleStyle, spannable: Spannable, start: Int, end: Int) {
+        if (start == end)
             return
 
-        if (style.isSpannableFormatted(selectionStart, selectionEnd, spannable)) {
+        if (style.isSpannableFormatted(start, end, spannable)) {
             //if range is fully formatted with the style then remove only
-            removeStyle(spannable, selectionStart, selectionEnd, style::class.java)
+            spannable.removeStyle(start, end, style::class.java)
         } else {
             //if range is not fully formatted with style, then remove it first
             //and then format it again
-            removeStyle(spannable, selectionStart, selectionEnd, style::class.java)
-            style.format(selectionStart, selectionEnd, spannable)
+            spannable.removeStyle(start, end, style::class.java)
+            style.format(start, end, spannable)
         }
 
     }
 
+    /**
+     * Change the font size of the [spannable] from [start] to [end]
+     * according to the [sizeMultiplier]
+     */
     fun changeFontSize(start: Int, end: Int, spannable: Spannable, sizeMultiplier: Float) {
         if (sizeMultiplier == RelativeFontSizeStyle.DEFAULT_RELATIVE_SIZE) {
-            removeStyle(spannable, start, end, RelativeFontSizeStyle::class.java)
+            spannable.removeStyle(start, end, RelativeFontSizeStyle::class.java)
         } else {
-            removeStyle(spannable, start, end, RelativeFontSizeStyle::class.java)
+            spannable.removeStyle(start, end, RelativeFontSizeStyle::class.java)
             RelativeFontSizeStyle(sizeMultiplier).format(start, end, spannable)
         }
     }
@@ -229,6 +210,9 @@ class EditorViewModel @Inject constructor(
         FontTypeStyle(fontName, fontProvider).format(start, end, spannable)
     }
 
+    /**
+     * Applies the style to [spannable] from [start] to [end]
+     */
     private fun Style.format(start: Int, end: Int, spannable: Spannable) {
         val range = StyleRange(this, end, start)
         spannable.setSpan(range.format, start, end, spannableFlag)
@@ -237,25 +221,22 @@ class EditorViewModel @Inject constructor(
 
 
     /**
-     * Removes the instance of [Style] if exist between [start] and [end] in the [spannable]
+     * Removes the instance of [Style] if exist between [start] and [end]
      */
-    private fun <T : Style> removeStyle(
-        spannable: Spannable,
+    private fun <T : Style> Spannable.removeStyle(
         start: Int,
         end: Int,
         styleClazz: Class<T>
     ) {
-        spannable.removeFormatting(_ranges, start, end) {
-            !styleClazz.isInstance(it)
-        }
+        removeFormatting(_ranges, start, end) { !styleClazz.isInstance(it) }
     }
 
     /**
      * Removes formatting from the given [formattingRanges]
-     * [formattingRanges] : The list of range in which the formatting need to be removed.
-     * [selectionStart] : The start of the selection.
-     * [selectionEnd] : The end of the selection.
-     * [skip] : Should returns false to skip the given style for further checking,
+     * @param [formattingRanges] : The list of range in which the formatting need to be removed.
+     * @param [selectionStart] : The start of the selection.
+     * @param [selectionEnd] : The end of the selection.
+     * @param [skip] : Should returns false to skip the given style for further checking,
      * else true to check and remove.
      */
     private fun Spannable.removeFormatting(
